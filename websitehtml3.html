@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$ASLEEP — The Dev Is Asleep | The Curve Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-green: #39ff14;
+    --neon-blue: #00d4ff;
+    --dark-bg: #050d1a;
+    --dark-surface: #0a1628;
+    --dark-card: #0d1e35;
+    --grid-color: rgba(0, 212, 255, 0.08);
+    --text-main: #e8f4f8;
+    --text-muted: #7da8c0;
+    --glow-green: rgba(57, 255, 20, 0.15);
+    --glow-blue: rgba(0, 212, 255, 0.15);
+
+    /* Gotham palette — Drop #002 */
+    --gotham-purple: #6b3fa0;
+    --gotham-magenta: #d4377f;
+    --gotham-teal: #4fd6c4;
+    --gotham-card: #160d28;
+    --glow-gotham: rgba(107, 63, 160, 0.25);
+
+    /* Mogul palette — Drop #003 */
+    --mogul-purple: #7c3fd1;
+    --mogul-gold: #f0c14b;
+    --mogul-card: #1a1230;
+    --glow-mogul: rgba(124, 63, 209, 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--text-main);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient glow blobs */
+  .ambient {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ambient-1 {
+    width: 600px; height: 600px;
+    background: var(--glow-green);
+    top: -200px; left: -200px;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .ambient-2 {
+    width: 500px; height: 500px;
+    background: var(--glow-blue);
+    bottom: -100px; right: -100px;
+    animation: drift 15s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(40px, 30px); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5, 13, 26, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(57, 255, 20, 0.12);
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--neon-green); }
+
+  .nav-cta {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dark-bg);
+    background: var(--neon-green);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+  }
+  .nav-cta:hover {
+    opacity: 0.9;
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+  }
+
+  .hero-inner { max-width: 900px; }
+
+  .drop-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    animation: pulse-border 3s ease-in-out infinite;
+  }
+  @keyframes pulse-border {
+    0%, 100% { border-color: rgba(0, 212, 255, 0.3); box-shadow: none; }
+    50% { border-color: rgba(0, 212, 255, 0.7); box-shadow: 0 0 12px rgba(0, 212, 255, 0.2); }
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 12vw, 140px);
+    letter-spacing: 4px;
+    line-height: 0.9;
+    color: #fff;
+    text-shadow: 0 0 60px rgba(57, 255, 20, 0.2);
+    margin-bottom: 16px;
+  }
+
+  .hero-title .green { color: var(--neon-green); text-shadow: 0 0 40px rgba(57, 255, 20, 0.6); }
+
+  .hero-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(24px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--neon-green);
+    letter-spacing: 6px;
+    margin-bottom: 32px;
+    animation: flicker 8s linear infinite;
+  }
+  @keyframes flicker {
+    0%, 98%, 100% { opacity: 1; }
+    99% { opacity: 0.7; }
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 0 auto 48px;
+  }
+
+  .hero-desc strong { color: var(--text-main); }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dark-bg);
+    background: var(--neon-green);
+    border: none;
+    padding: 16px 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.35);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 50px rgba(57, 255, 20, 0.55); transform: translateY(-1px); }
+
+  .btn-secondary {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--neon-green);
+    background: transparent;
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    padding: 16px 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--neon-green);
+    background: rgba(57, 255, 20, 0.05);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.15);
+  }
+
+  /* Sleeping mascot */
+  .mascot-wrap {
+    margin: 60px auto 0;
+    position: relative;
+    width: 220px;
+    height: 140px;
+  }
+
+  .mascot-svg {
+    width: 180px;
+    animation: sleep-bounce 4s ease-in-out infinite;
+  }
+  @keyframes sleep-bounce {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+  }
+
+  .zzz-1, .zzz-2, .zzz-3 {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    animation: float-up 3s ease-in-out infinite;
+    opacity: 0;
+  }
+  .zzz-1 { font-size: 20px; left: 160px; top: 60px; animation-delay: 0s; }
+  .zzz-2 { font-size: 28px; left: 175px; top: 35px; animation-delay: 0.8s; }
+  .zzz-3 { font-size: 36px; left: 185px; top: 5px; animation-delay: 1.6s; }
+  @keyframes float-up {
+    0% { opacity: 0; transform: translateY(0) translateX(0); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-30px) translateX(10px); }
+  }
+
+  /* ── DROP DIVIDER (between coins) ── */
+  .drop-divider {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 60px 40px 0;
+  }
+  .drop-divider-line {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .drop-divider-line::before,
+  .drop-divider-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(212, 55, 127, 0.3), transparent);
+  }
+  .drop-divider-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gotham-teal);
+    white-space: nowrap;
+  }
+
+  /* ── GOTHAM TICKER STRIP ── */
+  .ticker-strip.gotham {
+    background: var(--gotham-magenta);
+  }
+  .ticker-strip.gotham .ticker-item { color: #1a0b2e; }
+  .ticker-strip.gotham .ticker-inner { animation-direction: reverse; }
+
+  /* ── GOTHAM HERO ── */
+  .gotham-hero {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 40px 0;
+  }
+
+  .gotham-frame {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(107, 63, 160, 0.35);
+    box-shadow: 0 0 60px var(--glow-gotham);
+  }
+
+  .gotham-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gotham-frame-tag {
+    position: absolute;
+    top: 20px; left: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gotham-teal);
+    border: 1px solid rgba(79, 214, 196, 0.4);
+    background: rgba(10, 4, 20, 0.6);
+    backdrop-filter: blur(6px);
+    padding: 6px 14px;
+    border-radius: 100px;
+    z-index: 2;
+  }
+
+  .gotham-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(24px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--gotham-teal);
+    text-shadow: 0 0 20px rgba(79, 214, 196, 0.5);
+    letter-spacing: 6px;
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  /* ── GOTHAM STORY ── */
+  .story-card.gotham {
+    border-color: rgba(107, 63, 160, 0.25);
+  }
+  .story-card.gotham::before {
+    background: var(--gotham-teal);
+    box-shadow: 0 0 20px rgba(79, 214, 196, 0.5);
+  }
+  .story-card.gotham .story-text strong { color: var(--gotham-teal); }
+
+  .section-label.gotham { color: var(--gotham-teal); }
+  .section-title.gotham-accent .accent { color: var(--gotham-magenta); text-shadow: 0 0 40px rgba(212, 55, 127, 0.5); }
+
+  /* ── GOTHAM STATS / TOKENOMICS ── */
+  .stat-card.gotham {
+    border-color: rgba(107, 63, 160, 0.2);
+  }
+  .stat-card.gotham:hover {
+    border-color: rgba(79, 214, 196, 0.4);
+    box-shadow: 0 0 20px rgba(79, 214, 196, 0.08);
+  }
+  .stat-card.gotham .stat-value {
+    color: var(--gotham-teal);
+    text-shadow: 0 0 20px rgba(79, 214, 196, 0.4);
+  }
+
+  .toke-card.gotham {
+    border-color: rgba(107, 63, 160, 0.18);
+  }
+  .toke-card.gotham .toke-value { color: var(--gotham-teal); }
+
+  .btn-primary.gotham {
+    color: #1a0b2e;
+    background: var(--gotham-teal);
+    box-shadow: 0 0 30px rgba(79, 214, 196, 0.35);
+  }
+  .btn-primary.gotham:hover { box-shadow: 0 0 50px rgba(79, 214, 196, 0.55); }
+
+  .btn-secondary.gotham {
+    color: var(--gotham-teal);
+    border-color: rgba(79, 214, 196, 0.4);
+  }
+  .btn-secondary.gotham:hover {
+    border-color: var(--gotham-teal);
+    background: rgba(79, 214, 196, 0.05);
+    box-shadow: 0 0 20px rgba(79, 214, 196, 0.15);
+  }
+
+  /* Log-line readout for the patrol report */
+  .patrol-log {
+    margin-top: 60px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 2.1;
+    color: var(--text-muted);
+    background: var(--gotham-card);
+    border: 1px solid rgba(107, 63, 160, 0.2);
+    border-radius: 8px;
+    padding: 28px 32px;
+  }
+  .patrol-log .ts { color: var(--gotham-teal); margin-right: 12px; }
+  .patrol-log .line { display: block; }
+
+  /* ── MOGUL TICKER STRIP ── */
+  .ticker-strip.mogul {
+    background: var(--mogul-gold);
+  }
+  .ticker-strip.mogul .ticker-item { color: #2a1845; }
+  .ticker-strip.mogul .ticker-inner { animation-direction: reverse; }
+
+  /* ── MOGUL HERO ── */
+  .mogul-hero {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 40px 0;
+  }
+
+  .mogul-frame {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(124, 63, 209, 0.35);
+    box-shadow: 0 0 60px var(--glow-mogul);
+  }
+
+  .mogul-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .mogul-frame-tag {
+    position: absolute;
+    top: 20px; left: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mogul-gold);
+    border: 1px solid rgba(240, 193, 75, 0.4);
+    background: rgba(20, 10, 35, 0.6);
+    backdrop-filter: blur(6px);
+    padding: 6px 14px;
+    border-radius: 100px;
+    z-index: 2;
+  }
+
+  .mogul-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(24px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--mogul-gold);
+    text-shadow: 0 0 20px rgba(240, 193, 75, 0.5);
+    letter-spacing: 6px;
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  /* ── MOGUL STORY ── */
+  .story-card.mogul {
+    border-color: rgba(124, 63, 209, 0.25);
+  }
+  .story-card.mogul::before {
+    background: var(--mogul-gold);
+    box-shadow: 0 0 20px rgba(240, 193, 75, 0.5);
+  }
+  .story-card.mogul .story-text strong { color: var(--mogul-gold); }
+
+  .section-label.mogul { color: var(--mogul-gold); }
+  .section-title.mogul-accent .accent { color: var(--mogul-purple); text-shadow: 0 0 40px rgba(124, 63, 209, 0.6); }
+
+  /* ── MOGUL STATS / TOKENOMICS ── */
+  .stat-card.mogul {
+    border-color: rgba(124, 63, 209, 0.2);
+  }
+  .stat-card.mogul:hover {
+    border-color: rgba(240, 193, 75, 0.4);
+    box-shadow: 0 0 20px rgba(240, 193, 75, 0.08);
+  }
+  .stat-card.mogul .stat-value {
+    color: var(--mogul-gold);
+    text-shadow: 0 0 20px rgba(240, 193, 75, 0.4);
+  }
+
+  .toke-card.mogul {
+    border-color: rgba(124, 63, 209, 0.18);
+  }
+  .toke-card.mogul .toke-value { color: var(--mogul-gold); }
+
+  .btn-primary.mogul {
+    color: #2a1845;
+    background: var(--mogul-gold);
+    box-shadow: 0 0 30px rgba(240, 193, 75, 0.35);
+  }
+  .btn-primary.mogul:hover { box-shadow: 0 0 50px rgba(240, 193, 75, 0.55); }
+
+  .btn-secondary.mogul {
+    color: var(--mogul-gold);
+    border-color: rgba(240, 193, 75, 0.4);
+  }
+  .btn-secondary.mogul:hover {
+    border-color: var(--mogul-gold);
+    background: rgba(240, 193, 75, 0.05);
+    box-shadow: 0 0 20px rgba(240, 193, 75, 0.15);
+  }
+
+  /* Ledger readout for the wealth-gap math */
+  .wealth-log {
+    margin-top: 60px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 2.1;
+    color: var(--text-muted);
+    background: var(--mogul-card);
+    border: 1px solid rgba(124, 63, 209, 0.2);
+    border-radius: 8px;
+    padding: 28px 32px;
+  }
+  .wealth-log .ts { color: var(--mogul-gold); margin-right: 12px; }
+  .wealth-log .line { display: block; }
+
+  .ticker-strip {
+    position: relative;
+    z-index: 1;
+    background: var(--neon-green);
+    padding: 12px 0;
+    overflow: hidden;
+  }
+
+  .ticker-inner {
+    display: flex;
+    animation: scroll-left 20s linear infinite;
+    width: max-content;
+  }
+
+  .ticker-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--dark-bg);
+    padding: 0 40px;
+    white-space: nowrap;
+  }
+
+  .ticker-sep { opacity: 0.4; }
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon-green);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+
+  /* ── STORY ── */
+  .story-card {
+    background: var(--dark-card);
+    border: 1px solid rgba(57, 255, 20, 0.15);
+    border-radius: 8px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .story-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--neon-green);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  }
+
+  .story-text {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--text-muted);
+  }
+
+  .story-text strong { color: var(--neon-green); font-weight: 600; }
+
+  .story-text p { margin-bottom: 20px; }
+  .story-text p:last-child { margin-bottom: 0; }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 60px;
+  }
+
+  .stat-card {
+    background: var(--dark-card);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 8px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover {
+    border-color: rgba(57, 255, 20, 0.4);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.08);
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ── TOKENOMICS ── */
+  .tokenomics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 40px;
+  }
+  @media (max-width: 600px) { .tokenomics-grid { grid-template-columns: 1fr; } }
+
+  .toke-card {
+    background: var(--dark-card);
+    border: 1px solid rgba(57, 255, 20, 0.12);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .toke-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .toke-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+  }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    margin-top: 40px;
+    position: relative;
+  }
+
+  .roadmap::before {
+    content: '';
+    position: absolute;
+    left: 16px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--neon-green), transparent);
+  }
+
+  .road-item {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 40px;
+    padding-left: 48px;
+    position: relative;
+  }
+
+  .road-dot {
+    position: absolute;
+    left: 8px; top: 4px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-green);
+    background: var(--dark-bg);
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
+  }
+
+  .road-dot.active {
+    background: var(--neon-green);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.7);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 20px rgba(57, 255, 20, 0.7); }
+    50% { box-shadow: 0 0 35px rgba(57, 255, 20, 1); }
+  }
+
+  .road-content {}
+
+  .road-phase {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    margin-bottom: 4px;
+  }
+
+  .road-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .road-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── HOW TO BUY ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+    counter-reset: step;
+  }
+
+  .step-card {
+    background: var(--dark-card);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 8px;
+    padding: 28px 24px;
+    position: relative;
+    counter-increment: step;
+  }
+
+  .step-card::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: rgba(57, 255, 20, 0.08);
+    position: absolute;
+    top: 12px; right: 16px;
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .step-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--neon-green);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(57, 255, 20, 0.1);
+    padding: 48px 40px;
+    text-align: center;
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--neon-green);
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+    margin-bottom: 12px;
+  }
+
+  .footer-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    list-style: none;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--neon-green); }
+
+  .footer-disclaimer {
+    font-size: 12px;
+    color: rgba(125, 168, 192, 0.4);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Alarm clock animation */
+  @keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-8deg); }
+    40% { transform: rotate(8deg); }
+    60% { transform: rotate(-5deg); }
+    80% { transform: rotate(5deg); }
+  }
+
+  .alarm { display: inline-block; animation: shake 4s ease-in-out infinite; }
+
+  /* Divider line */
+  .divider {
+    position: relative;
+    z-index: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(57, 255, 20, 0.2), transparent);
+    margin: 0 40px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .story-card { padding: 24px; }
+    footer { padding: 40px 20px; }
+    .divider { margin: 0 20px; }
+    .gotham-hero { padding: 60px 20px 0; }
+    .gotham-ticker { letter-spacing: 3px; margin-top: 20px; }
+    .patrol-log { padding: 20px; font-size: 12px; }
+    .mogul-hero { padding: 60px 20px 0; }
+    .mogul-ticker { letter-spacing: 3px; margin-top: 20px; }
+    .wealth-log { padding: 20px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">THE CURVE CLUB</div>
+  <ul class="nav-links">
+    <li><a href="#story">$ASLEEP</a></li>
+    <li><a href="#goddamn-city">GOTHAM</a></li>
+    <li><a href="#trillion">$TRILL</a></li>
+    <li><a href="#tokenomics">Tokenomics</a></li>
+    <li><a href="#how-to-buy">Buy</a></li>
+    <li><a href="https://x.com/CurveClub" target="_blank">X / Twitter</a></li>
+  </ul>
+  <a href="https://pump.fun" target="_blank" class="nav-cta">Buy $ASLEEP</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="drop-badge">⬡ Drop #001 · Degen Class of '26 · Solana</div>
+
+    <h1 class="hero-title">
+      THE DEV<br>IS <span class="green">ASLEEP</span>
+    </h1>
+
+    <div class="hero-ticker">$ASLEEP</div>
+
+    <p class="hero-desc">
+      He took a heavy melatonin after a <strong>48-hour trading bender</strong> and forgot he clicked deploy.
+      Wallet is 100% locked. Phone is on Do Not Disturb.<br>
+      <strong>We are completely unsupervised.</strong>
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://pump.fun" target="_blank" class="btn-primary">🚀 Buy on Pump.fun</a>
+      <a href="https://x.com/CurveClub" target="_blank" class="btn-secondary">𝕏 Follow @CurveClub</a>
+    </div>
+
+    <div class="mascot-wrap">
+      <!-- Sleeping figure SVG -->
+      <svg class="mascot-svg" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <ellipse cx="90" cy="95" rx="55" ry="28" fill="#1a3a5c" opacity="0.3"/>
+        <!-- Pajama body -->
+        <rect x="55" y="70" width="70" height="45" rx="20" fill="#2d5f9e"/>
+        <!-- Pajama stars -->
+        <circle cx="70" cy="82" r="3" fill="#4a90d9" opacity="0.6"/>
+        <circle cx="100" cy="78" r="2.5" fill="#4a90d9" opacity="0.6"/>
+        <circle cx="88" cy="95" r="3" fill="#4a90d9" opacity="0.6"/>
+        <circle cx="112" cy="90" r="2" fill="#4a90d9" opacity="0.6"/>
+        <!-- Head -->
+        <circle cx="105" cy="60" r="28" fill="#f0e6d3"/>
+        <!-- Eyes (closed/sleeping) -->
+        <path d="M96 57 Q99 60 102 57" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M108 57 Q111 60 114 57" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Mouth (slight smile) -->
+        <path d="M100 67 Q105 71 110 67" stroke="#b0897a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Arms -->
+        <path d="M55 85 Q35 90 30 100" stroke="#2d5f9e" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <path d="M125 85 Q140 78 145 75" stroke="#2d5f9e" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <!-- Pillow -->
+        <ellipse cx="58" cy="105" rx="38" ry="16" fill="#0d4a6e" opacity="0.7"/>
+      </svg>
+      <span class="zzz-1" style="font-family:'Bebas Neue',sans-serif;">Z</span>
+      <span class="zzz-2" style="font-family:'Bebas Neue',sans-serif;">Z</span>
+      <span class="zzz-3" style="font-family:'Bebas Neue',sans-serif;">Z</span>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER STRIP -->
+<div class="ticker-strip">
+  <div class="ticker-inner" aria-hidden="true">
+    <span class="ticker-item">$ASLEEP</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE DEV IS PASSED OUT</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">PUMP QUIETLY</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE CURVE CLUB</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">DROP #001</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">$ASLEEP</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE DEV IS PASSED OUT</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">PUMP QUIETLY</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE CURVE CLUB</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">DROP #001</span>
+    <span class="ticker-item ticker-sep">✦</span>
+  </div>
+</div>
+
+<!-- DROP DIVIDER -->
+<div class="drop-divider">
+  <div class="drop-divider-line">
+    <span class="drop-divider-label">Drop #002 · Now Live</span>
+  </div>
+</div>
+
+<!-- GODDAMN CITY -->
+<div class="gotham-hero" id="goddamn-city">
+  <div class="gotham-frame">
+    <span class="gotham-frame-tag">⬡ Drop #002 · Degen Class of '26 · Solana</span>
+    <img src="goddamn_city.jpg" alt="A weary Batman overlooks a neon skyline, with GODDAMN CITY written below him">
+  </div>
+  <div class="gotham-ticker">$TIRED</div>
+</div>
+
+<section id="tired-story">
+  <div class="section-label gotham">// The origin story</div>
+  <h2 class="section-title gotham-accent">HE'S NOT ANGRY. HE'S <span class="accent">DONE.</span></h2>
+
+  <div class="story-card gotham">
+    <div class="story-text">
+      <p>
+        We've all seen him stand on the gargoyles. Nobody ever asks how he's doing.
+        This is <strong>ironically tired Batman</strong> — eighty years on the cape-and-cowl
+        shift, and the sheer volume of nightly stupidity is starting to outweigh the crime itself.
+      </p>
+      <p>
+        He's not angry. He's just... <strong>done.</strong> The crime was never the real problem —
+        it's the incompetence. The city isn't saved. It's just <strong>temporarily less stupid.</strong>
+      </p>
+      <p>
+        $TIRED is <strong>Drop #002</strong> from The Curve Club — Solana's weekly meme foundry.
+        Same dev. Different night shift. He's been holding this city together for eighty years
+        and frankly, he'd like five minutes.
+      </p>
+    </div>
+  </div>
+
+  <div class="patrol-log">
+    <span class="line"><span class="ts">23:41</span> Grappled to rooftop. Sighed audibly.</span>
+    <span class="line"><span class="ts">00:12</span> Stopped a mugging. Mugger apologized. Accepted.</span>
+    <span class="line"><span class="ts">01:03</span> Batmobile got a parking ticket. Again.</span>
+    <span class="line"><span class="ts">02:30</span> Joker called. Let it ring out.</span>
+    <span class="line"><span class="ts">03:55</span> City: temporarily less stupid. Going home.</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card gotham">
+      <div class="stat-value">80</div>
+      <div class="stat-label">Years On Shift</div>
+    </div>
+    <div class="stat-card gotham">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">LP Burned</div>
+    </div>
+    <div class="stat-card gotham">
+      <div class="stat-value">0%</div>
+      <div class="stat-label">Dev Allocation</div>
+    </div>
+    <div class="stat-card gotham">
+      <div class="stat-value">∞</div>
+      <div class="stat-label">Patience Remaining</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 48px;">
+    <a href="https://pump.fun" target="_blank" class="btn-primary gotham" style="font-size: 15px; padding: 18px 48px;">
+      🦇 Buy $TIRED on Pump.fun
+    </a>
+  </div>
+</section>
+
+<!-- GOTHAM TICKER STRIP -->
+<div class="ticker-strip gotham">
+  <div class="ticker-inner" aria-hidden="true">
+    <span class="ticker-item">$TIRED</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">GODDAMN CITY</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">EIGHTY YEARS ON SHIFT</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">TEMPORARILY LESS STUPID</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE CURVE CLUB</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">DROP #002</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">$TIRED</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">GODDAMN CITY</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">EIGHTY YEARS ON SHIFT</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">TEMPORARILY LESS STUPID</span>
+    <span class="ticker-item ticker-sep">✦</span>
+  </div>
+</div>
+
+<!-- DROP DIVIDER -->
+<div class="drop-divider">
+  <div class="drop-divider-line">
+    <span class="drop-divider-label">Drop #003 · Now Live</span>
+  </div>
+</div>
+
+<!-- MR. TRILLION -->
+<div class="mogul-hero" id="trillion">
+  <div class="mogul-frame">
+    <span class="mogul-frame-tag">⬡ Drop #003 · Degen Class of '26 · Solana</span>
+    <img src="mr_trillion.jpg" alt="A cartoon mogul in a gold dressing gown surrounded by rockets, cash, and a moon-faced dog wearing sunglasses">
+  </div>
+  <div class="mogul-ticker">$TRILL</div>
+</div>
+
+<section id="trillion-story">
+  <div class="section-label mogul">// The origin story</div>
+  <h2 class="section-title mogul-accent">THE MATH DOESN'T <span class="accent">WORK.</span></h2>
+
+  <div class="story-card mogul">
+    <div class="story-text">
+      <p>
+        Somewhere out there, a guy just became the world's <strong>first trillionaire.</strong>
+        One person. Twelve zeroes. Meanwhile the average American worker earns about
+        <strong>$63,795 a year.</strong>
+      </p>
+      <p>
+        Let's do the math. Save every single dollar — no rent, no food, no taxes,
+        nothing — and it takes roughly <strong>15.6 million years</strong> to stack up to
+        $1 trillion. Modern humans have been around for about 300,000 years.
+        You'd need <strong>fifty entire histories of our species</strong> just to catch up.
+      </p>
+      <p>
+        $TRILL is <strong>Drop #003</strong> from The Curve Club — Solana's weekly meme foundry.
+        We're not becoming trillionaires. We're laughing at a system where that number
+        even exists, while building a community that rides the rocket together.
+        Degen Class of '26.
+      </p>
+    </div>
+  </div>
+
+  <div class="wealth-log">
+    <span class="line"><span class="ts">SALARY</span> $63,795 / year average U.S. worker</span>
+    <span class="line"><span class="ts">GOAL</span> $1,000,000,000,000.00</span>
+    <span class="line"><span class="ts">TIME</span> 15,679,000 years saving 100% of income</span>
+    <span class="line"><span class="ts">REALITY</span> One person just did it. Instantly.</span>
+    <span class="line"><span class="ts">PLAN</span> Buy $TRILL. Laugh. Ride the rocket.</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card mogul">
+      <div class="stat-value">15.6M</div>
+      <div class="stat-label">Years To Save $1T</div>
+    </div>
+    <div class="stat-card mogul">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">LP Burned</div>
+    </div>
+    <div class="stat-card mogul">
+      <div class="stat-value">0%</div>
+      <div class="stat-label">Dev Allocation</div>
+    </div>
+    <div class="stat-card mogul">
+      <div class="stat-value">∞</div>
+      <div class="stat-label">Rocket Fuel</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 48px;">
+    <a href="https://pump.fun" target="_blank" class="btn-primary mogul" style="font-size: 15px; padding: 18px 48px;">
+      🚀 Buy $TRILL on Pump.fun
+    </a>
+  </div>
+</section>
+
+<!-- MOGUL TICKER STRIP -->
+<div class="ticker-strip mogul">
+  <div class="ticker-inner" aria-hidden="true">
+    <span class="ticker-item">$TRILL</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">MR. TRILLION</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">15.6 MILLION YEARS</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE MATH DOESN'T WORK</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE CURVE CLUB</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">DROP #003</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">$TRILL</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">MR. TRILLION</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">15.6 MILLION YEARS</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">SOLANA</span>
+    <span class="ticker-item ticker-sep">✦</span>
+    <span class="ticker-item">THE MATH DOESN'T WORK</span>
+    <span class="ticker-item ticker-sep">✦</span>
+  </div>
+</div>
+
+<div class="drop-divider">
+  <div class="drop-divider-line">
+    <span class="drop-divider-label">Drop #001 · The Original</span>
+  </div>
+</div>
+
+<!-- STORY -->
+<section id="story">
+  <div class="section-label">// The origin story</div>
+  <h2 class="section-title">WHAT HAPPENED</h2>
+
+  <div class="story-card">
+    <div class="story-text">
+      <p>
+        <strong>DEV IS PASSED OUT COLD.</strong> He took a heavy melatonin after a 48-hour trading bender
+        and forgot he clicked deploy. Wallet is 100% locked, his phone is on
+        Do Not Disturb, and we are <strong>completely unsupervised.</strong>
+      </p>
+      <p>
+        The chart is running. The community is throwing a party. And the alarm clock is ticking.
+        <strong>PUMP IT QUIETLY BEFORE HE WAKES UP AND REALIZES WHAT HE DID.</strong>
+      </p>
+      <p>
+        $ASLEEP is <strong>Drop #001</strong> from The Curve Club — Solana's weekly meme foundry.
+        Every week, a new drop. A new story. A new opportunity to be early.
+        This is the Degen Class of '26.
+      </p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">LP Burned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0%</div>
+      <div class="stat-label">Dev Allocation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">69M</div>
+      <div class="stat-label">Total Supply</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><span class="alarm">⏰</span></div>
+      <div class="stat-label">Time Until He Wakes</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TOKENOMICS -->
+<section id="tokenomics">
+  <div class="section-label">// On-chain facts</div>
+  <h2 class="section-title">TOKENOMICS</h2>
+  <p style="color: var(--text-muted); font-size: 16px; max-width: 560px;">
+    Clean. Simple. The way it should be. No presale, no team wallet, no VC bags.
+    Just a sleeping dev and a community holding the keys.
+  </p>
+
+  <div class="tokenomics-grid">
+    <div class="toke-card">
+      <div class="toke-label">Coin Name</div>
+      <div class="toke-value">The Dev Is Asleep</div>
+    </div>
+    <div class="toke-card">
+      <div class="toke-label">Ticker</div>
+      <div class="toke-value">$ASLEEP</div>
+    </div>
+    <div class="toke-card">
+      <div class="toke-label">Total Supply</div>
+      <div class="toke-value">69,000,000</div>
+    </div>
+    <div class="toke-card">
+      <div class="toke-label">Network</div>
+      <div class="toke-value">Solana</div>
+    </div>
+    <div class="toke-card">
+      <div class="toke-label">Dev Wallet</div>
+      <div class="toke-value">Locked 🔒</div>
+    </div>
+    <div class="toke-card">
+      <div class="toke-label">Liquidity</div>
+      <div class="toke-value">100% Burned</div>
+    </div>
+  </div>
+
+  <p style="color: var(--text-muted); font-size: 13px; font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; margin-top: 56px; margin-bottom: 16px;">
+    // Drop #002
+  </p>
+
+  <div class="tokenomics-grid">
+    <div class="toke-card gotham">
+      <div class="toke-label">Coin Name</div>
+      <div class="toke-value">Goddamn City</div>
+    </div>
+    <div class="toke-card gotham">
+      <div class="toke-label">Ticker</div>
+      <div class="toke-value">$TIRED</div>
+    </div>
+    <div class="toke-card gotham">
+      <div class="toke-label">Total Supply</div>
+      <div class="toke-value">69,000,000</div>
+    </div>
+    <div class="toke-card gotham">
+      <div class="toke-label">Network</div>
+      <div class="toke-value">Solana</div>
+    </div>
+    <div class="toke-card gotham">
+      <div class="toke-label">Dev Wallet</div>
+      <div class="toke-value">Locked 🔒</div>
+    </div>
+    <div class="toke-card gotham">
+      <div class="toke-label">Liquidity</div>
+      <div class="toke-value">100% Burned</div>
+    </div>
+  </div>
+
+  <p style="color: var(--text-muted); font-size: 13px; font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; margin-top: 56px; margin-bottom: 16px;">
+    // Drop #003
+  </p>
+
+  <div class="tokenomics-grid">
+    <div class="toke-card mogul">
+      <div class="toke-label">Coin Name</div>
+      <div class="toke-value">Mr. Trillion</div>
+    </div>
+    <div class="toke-card mogul">
+      <div class="toke-label">Ticker</div>
+      <div class="toke-value">$TRILL</div>
+    </div>
+    <div class="toke-card mogul">
+      <div class="toke-label">Total Supply</div>
+      <div class="toke-value">69,000,000</div>
+    </div>
+    <div class="toke-card mogul">
+      <div class="toke-label">Network</div>
+      <div class="toke-value">Solana</div>
+    </div>
+    <div class="toke-card mogul">
+      <div class="toke-label">Dev Wallet</div>
+      <div class="toke-value">Locked 🔒</div>
+    </div>
+    <div class="toke-card mogul">
+      <div class="toke-label">Liquidity</div>
+      <div class="toke-value">100% Burned</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">// The plan (while he sleeps)</div>
+  <h2 class="section-title">WHAT'S NEXT</h2>
+
+  <div class="roadmap">
+    <div class="road-item">
+      <div class="road-dot active"></div>
+      <div class="road-content">
+        <div class="road-phase">Phase 1 — Now</div>
+        <div class="road-title">DEPLOY & SLEEP</div>
+        <div class="road-desc">Launch on Pump.fun. Dev hits melatonin. Community discovers the chart.
+          Telegram opens. The alarm clock starts ticking.</div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-dot"></div>
+      <div class="road-content">
+        <div class="road-phase">Phase 2 — Community Takes Over</div>
+        <div class="road-title">UNSUPERVISED HOURS</div>
+        <div class="road-desc">Stealth pump. Meme campaign. Every holder becomes a marketer.
+          Get $ASLEEP trending before the dev's alarm goes off.</div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-dot"></div>
+      <div class="road-content">
+        <div class="road-phase">Phase 3 — He Wakes Up</div>
+        <div class="road-title">DEV SEES THE CHART</div>
+        <div class="road-desc">He opens his phone. 47 missed calls. $ASLEEP is on the front page.
+          He stares. He sips his coffee. He says nothing. He goes back to sleep.</div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-dot active"></div>
+      <div class="road-content">
+        <div class="road-phase">Phase 4 — Drop #002 (Live Now)</div>
+        <div class="road-title">GODDAMN CITY DROPS</div>
+        <div class="road-desc">$TIRED is live. Eighty years on shift, zero patience for nonsense.
+          The Curve Club drops every 7 days. Degen Class of '26 is just getting started.</div>
+      </div>
+    </div>
+    <div class="road-item">
+      <div class="road-dot active"></div>
+      <div class="road-content">
+        <div class="road-phase">Phase 5 — Drop #003 (Live Now)</div>
+        <div class="road-title">MR. TRILLION DROPS</div>
+        <div class="road-desc">$TRILL is live. The math says 15.6 million years.
+          We say buy the dip and ride the rocket. The Curve Club drops every 7 days.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW TO BUY -->
+<section id="how-to-buy">
+  <div class="section-label">// Step-by-step</div>
+  <h2 class="section-title">HOW TO BUY</h2>
+  <p style="color: var(--text-muted); font-size: 16px; max-width: 560px; margin-bottom: 8px;">
+    Move fast. He could wake up any second.
+  </p>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-icon">👛</div>
+      <div class="step-title">Get a Wallet</div>
+      <div class="step-desc">Download Phantom or Solflare. Set it up. Write down your seed phrase. Don't be that guy.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">◎</div>
+      <div class="step-title">Get Some SOL</div>
+      <div class="step-desc">Buy SOL on any exchange (Coinbase, Binance, Kraken) and send it to your wallet.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">🔄</div>
+      <div class="step-title">Go to Pump.fun</div>
+      <div class="step-desc">Head to pump.fun, search $ASLEEP, and connect your wallet. You're almost in.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">🚀</div>
+      <div class="step-title">Swap for $ASLEEP</div>
+      <div class="step-desc">Enter your amount, confirm the swap. Welcome to the Degen Class of '26. Don't wake him.</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 48px;">
+    <a href="https://pump.fun" target="_blank" class="btn-primary" style="font-size: 15px; padding: 18px 48px;">
+      🚀 Buy $ASLEEP on Pump.fun
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">THE CURVE CLUB</div>
+  <div class="footer-sub">Solana's Weekly Meme Foundry · Drop #001: $ASLEEP · Drop #002: $TIRED · Drop #003: $TRILL</div>
+
+  <ul class="footer-links">
+    <li><a href="https://x.com/CurveClub" target="_blank">𝕏 Twitter / X</a></li>
+    <li><a href="https://pump.fun" target="_blank">Pump.fun</a></li>
+    <li><a href="#story">$ASLEEP</a></li>
+    <li><a href="#goddamn-city">$TIRED</a></li>
+    <li><a href="#trillion">$TRILL</a></li>
+    <li><a href="#how-to-buy">How to Buy</a></li>
+  </ul>
+
+  <p class="footer-disclaimer">
+    $ASLEEP, $TIRED, and $TRILL are meme coins with no intrinsic value or financial return expectation.
+    This is not financial advice. Crypto is volatile. The dev is asleep, Batman is exhausted,
+    and Mr. Trillion isn't real — none of them can help you. Trade responsibly. NFA. DYOR.
+  </p>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
